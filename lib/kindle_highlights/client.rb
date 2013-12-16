@@ -34,7 +34,9 @@ module KindleHighlights
           asin_and_title_element = book.search("a").first
           asin = asin_and_title_element.attributes["href"].value.split("/").last
           title = asin_and_title_element.inner_html
-          @books[asin] = title
+          author = book.search("span[@class='author']").first.content.gsub(/[[:space:]]+/, ' ').strip
+          status = book.next_element.search(".//div[@class='statusText']/div[@class='text']").first.content.gsub(/[[:space:]]+/, ' ').strip.gsub(/ +/, '_')
+          @books[asin] = { :title => title, :asin => asin, :author => author, :status => status }
         end
         break if highlights_page.link_with(text: /Next/).nil?
         highlights_page = @mechanize_agent.click(highlights_page.link_with(text: /Next/))
